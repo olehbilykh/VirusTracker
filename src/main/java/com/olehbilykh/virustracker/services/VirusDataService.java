@@ -26,6 +26,7 @@ public class VirusDataService {
     private List<Location>  allStats = new ArrayList<>();
 
     //fetch data
+
     @PostConstruct
     //run on a schedule cron
     @Scheduled(cron = "* * 1 * * *")
@@ -42,14 +43,17 @@ public class VirusDataService {
             Location location = new Location();
             location.setState(record.get("Province/State"));
             location.setCountry(record.get("Country/Region"));
-//            double lat = isParsable(record.get("Lat")) ? Double.parseDouble(record.get("Lat")) : 0 ;
-//            location.setLat(lat);
+            location.setLatestTotalCases(Integer.parseInt(record.get(record.size() - 1)));
             location.setLat(toDouble(record.get("Lat")));
-            System.out.println(location);
+            int latestCases = Integer.parseInt(record.get(record.size()-1));
+            int prevDayCases = Integer.parseInt(record.get(record.size()-2));
+            location.setDelta(latestCases - prevDayCases);
             newStats.add(location);
-
         }
         this.allStats = newStats;
     }
 
+    public List<Location> getAllStats() {
+        return allStats;
+    }
 }
